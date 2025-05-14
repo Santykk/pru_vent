@@ -9,8 +9,8 @@ import { fileURLToPath } from 'url';
 // Cargar variables de entorno
 dotenv.config();
 
-// Configurar conexión a PostgreSQL
-const sql = postgres(process.env.DATABASE_URL, { ssl: { rejectUnauthorized: false } });
+// Crear cliente de Supabase usando la URL y la clave anónima
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 // Obtener __dirname en ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -91,6 +91,13 @@ app.get('/auth', (req, res) => {
 
 
 
+// Iniciar servidor en puerto 3000 (o el que prefieras)
+app.listen(3000, () => {
+    console.log('Servidor corriendo en el puerto 3000');
+});
+
+
+
 app.get('/auth/signup', (req, res) => {
     const role = req.query.role; // Obtiene el valor del query string "?role=user"
     const filePath = path.join(__dirname, 'public/html', 'validate.html');
@@ -115,4 +122,4 @@ app.listen(port, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${port}`);
 });
 
-export default sql;
+export default supabase;

@@ -2,47 +2,43 @@
 
 import express from 'express';
 import dotenv from 'dotenv';
-import { Client } from 'pg'; // Importamos el cliente de PostgreSQL
+import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 
 dotenv.config();
 
 const router = express.Router();
 
-// Crear cliente de PostgreSQL
-const client = new Client({
-  connectionString: process.env.DATABASE_URL, // Usar la URL de conexión de PostgreSQL
-  ssl: { rejectUnauthorized: false }, // Necesario si estás usando una conexión SSL (dependiendo de la configuración)
-});
+// Inicializar Supabase
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
-client.connect(); // Conectar al servidor de base de datos
-
-// 🔹 LOGIN con PostgreSQL y token local
+// 🔹 LOGIN con Supabase y token local
 router.post('/', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Autenticación en la base de datos de PostgreSQL
-    const query = 'SELECT * FROM usuarios WHERE email = $1 AND password = $2';
-    const values = [email, password];
-    const result = await client.query(query, values);
+    // Autenticación Supabase
+    const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
 
-    if (result.rowCount === 0) {
+    if (authError) {
       return res.status(401).json({ success: false, message: 'Credenciales incorrectas' });
     }
 
-    const user = result.rows[0];
-    const userId = user.id;
+    const userId = authData.user.id;
 
-    // Buscar el rol desde la tabla personalizada
-    const roleQuery = 'SELECT role_tusrl FROM usuariorol_usrl WHERE id_uusrl = $1';
-    const roleResult = await client.query(roleQuery, [userId]);
+    // Buscar el rol desde tabla personalizada
+    const { data: roleData, error: roleError } = await supabase
+      .from('usuariorol_usrl')
+      .select('role_tusrl')
+      .eq('id_uusrl', userId)
+      .single();
 
-    if (roleResult.rowCount === 0) {
+    if (roleError || !roleData) {
       return res.status(404).json({ success: false, message: 'Rol no encontrado' });
     }
-
-    const roleData = roleResult.rows[0];
 
     // Crear token de sesión local
     const token = crypto.randomBytes(32).toString('hex');
