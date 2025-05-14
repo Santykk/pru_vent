@@ -1,4 +1,4 @@
-// server.js
+// api/login.js
 
 import express from 'express';
 import dotenv from 'dotenv';
@@ -7,16 +7,13 @@ import crypto from 'crypto';
 
 dotenv.config();
 
-const app = express();
-const port = process.env.PORT || 4000;
+const router = express.Router();
 
 // Inicializar Supabase
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
-app.use(express.json()); // Middleware para JSON
-
 // 🔹 LOGIN con Supabase y token local
-app.post('/', async (req, res) => {
+router.post('/', async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -43,7 +40,7 @@ app.post('/', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Rol no encontrado' });
     }
 
-    // Crear token de sesión local (opcional, para frontend o cookies)
+    // Crear token de sesión local
     const token = crypto.randomBytes(32).toString('hex');
 
     // 🚀 Respuesta final
@@ -59,6 +56,5 @@ app.post('/', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`✅ API escuchando en el puerto ${port}`);
-});
+// ✅ Exportar el router como default para que lo reconozca tu sistema dinámico
+export default router;

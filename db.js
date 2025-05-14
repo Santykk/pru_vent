@@ -91,13 +91,6 @@ app.get('/auth', (req, res) => {
 
 
 
-// Iniciar servidor en puerto 3000 (o el que prefieras)
-app.listen(3000, () => {
-    console.log('Servidor corriendo en el puerto 3000');
-});
-
-
-
 app.get('/auth/signup', (req, res) => {
     const role = req.query.role; // Obtiene el valor del query string "?role=user"
     const filePath = path.join(__dirname, 'public/html', 'validate.html');
