@@ -16,7 +16,7 @@ const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANO
 app.use(express.json()); // Middleware para JSON
 
 // 🔹 LOGIN con Supabase y token local
-app.post('/api/login', async (req, res) => {
+app.post('/', async (req, res) => {
   const { email, password } = req.body;
 
   try {
