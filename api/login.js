@@ -8,9 +8,11 @@ import crypto from 'crypto';
 dotenv.config();
 
 const router = express.Router();
-
-// Inicializar Supabase
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+const sql = postgres(process.env.DATABASE_URL, {
+  debug: (connection, query, params) => {
+    console.log('SQL Query:', query, 'Params:', params);
+  }
+});
 
 // 🔹 LOGIN con Supabase y token local
 router.post('/', async (req, res) => {
