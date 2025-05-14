@@ -30,3 +30,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     document.getElementById('responseMessage').textContent = 'Error al conectar con el servidor.';
   }
 });
+
+
+console.log("URL:", process.env.SUPABASE_URL);
+console.log("KEY:", process.env.SUPABASE_ANON_KEY);
