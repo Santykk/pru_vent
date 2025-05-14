@@ -5,5 +5,31 @@
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "git": "^0.1.5"
+  },
+  "name": "gestion-para-empr-1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "db.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node db.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Santykk/pru_vent.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/Santykk/pru_vent/issues"
+  },
+  "homepage": "https://github.com/Santykk/pru_vent#readme",
+  "devDependencies": {
+    "@types/body-parser": "^1.19.5",
+    "@types/debug": "^4.1.12",
+    "@types/express": "^5.0.0",
+    "@types/methods": "^1.1.4"
   }
 }
