@@ -3,14 +3,26 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+
+// Cargar variables de entorno
 dotenv.config();
 
+// Crear cliente de Supabase usando la URL y la clave anónima
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+
+// Obtener __dirname en ES Modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// **Configurar Express**
 const app = express();
 const port = process.env.PORT || 4000;
 
-// Para obtener __dirname en ESModules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// **Middlewares**
+app.use(cors());
+app.use(express.json()); // Para recibir JSON en las peticiones
+app.use(express.urlencoded({ extended: true })); // Para recibir datos de formularios
+app.use(express.static(path.join(__dirname, 'public')));
 
 // **Carga dinámica de rutas desde la carpeta "api"**
 const apiPath = path.join(__dirname, 'api');
