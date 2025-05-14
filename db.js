@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createClient } from '@supabase/supabase-js';
 
 
 // Cargar variables de entorno
@@ -48,3 +49,6 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
+
+
+export default supabase;
