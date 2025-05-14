@@ -38,7 +38,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 })();
 
 // **Carga dinámica de rutas desde la carpeta "api"**
-const apiPath = path.join(__dirname, 'api');
+const apiPath = __dirname;
 fs.readdirSync(apiPath).forEach((file) => {
     if (file.endsWith('.js')) {
         import(`./api/${file}`).then((module) => {
