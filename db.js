@@ -5,6 +5,7 @@ import cors from 'cors';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createClient } from '@supabase/supabase-js';  // Importar cliente de Supabase
 
 // Cargar variables de entorno
 dotenv.config();
