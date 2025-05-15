@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       carta.className = 'card';
       carta.innerHTML = `
         <div class="card-img">
-          <img src="${producto.imagenprinc_tprd || 'https://via.placeholder.com/150'}" alt="${producto.nombre_tprd}" class="img-card">
+          <img src="${producto.imagenprinc_tprd || 'https://via.placeholder.com/150'}" alt="${producto.nombre_tprd}" class="card-img">
         </div>
         <div class="card-info">
           <p class="text-title">${producto.nombre_tprd}</p>
