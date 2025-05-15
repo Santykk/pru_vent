@@ -64,7 +64,17 @@ app.get('/session-expired', (req, res) => {
 });
 
 app.get('/auth', (req, res) => {
-    const filePath = path.join(__dirname, 'public/html', 'login.html');
+    const filePath = path.join(__dirname, 'public/auth/pages', 'login.html');
+
+    if (fs.existsSync(filePath)) {
+        res.sendFile(filePath);
+    } else {
+        res.status(404).send('Página no encontrada');
+    }
+});
+
+app.get('/auth/register', (req, res) => {
+    const filePath = path.join(__dirname, 'public/auth/pages', 'register.html');
 
     if (fs.existsSync(filePath)) {
         res.sendFile(filePath);
