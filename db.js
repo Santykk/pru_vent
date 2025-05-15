@@ -64,7 +64,7 @@ app.get('/session-expired', (req, res) => {
 });
 
 app.get('/auth', (req, res) => {
-    const filePath = path.join(__dirname, 'public', 'login.html');
+    const filePath = path.join(__dirname, 'public/html', 'login.html');
 
     if (fs.existsSync(filePath)) {
         res.sendFile(filePath);
