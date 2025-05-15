@@ -3,7 +3,7 @@ document.getElementById('forgot-form').addEventListener('submit', async (e) => {
     const email = document.getElementById('email').value;
 
     try {
-      const response = await fetch('/api/forgot-password', {
+      const response = await fetch('/api/password', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
