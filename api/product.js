@@ -10,7 +10,7 @@ const router = express.Router();
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
 /* 🔹 Obtener todos los productos */
-router.get('/api/product', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const { data, error } = await supabase.from('producto_prd').select('*');
 
