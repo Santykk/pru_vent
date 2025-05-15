@@ -1,6 +1,7 @@
- body {
+    body {
       margin: 0;
       font-family: Arial, sans-serif;
+      background-color: #f5f5f5;
     }
 
     header {
@@ -10,6 +11,10 @@
       padding: 10px 20px;
       background-color: #1e1e1e;
       color: #fff;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* 👈 Sombra suave */
+      position: sticky;
+      top: 0;
+      z-index: 100;
     }
 
     .logo {
@@ -18,7 +23,7 @@
     }
 
     .search-box input {
-      padding: 5px 10px;
+      padding: 6px 12px;
       border-radius: 4px;
       border: none;
       outline: none;
