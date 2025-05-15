@@ -9,8 +9,8 @@
       align-items: center;
       justify-content: space-between;
       padding: 10px 20px;
-      background-color: #1e1e1e;
-      color: #fff;
+      background-color: #ffffff;
+      color: #141414;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* 👈 Sombra suave */
       position: sticky;
       top: 0;
@@ -37,7 +37,7 @@
     .icons svg {
       width: 24px;
       height: 24px;
-      fill: white;
+      fill: rgb(0, 0, 0);
       cursor: pointer;
       transition: transform 0.2s;
     }
