@@ -3,7 +3,7 @@
     const mensaje = document.getElementById('mensaje-productos');
 
     try {
-      const response = await fetch('/api/productos', {
+      const response = await fetch('/api/product', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json'
