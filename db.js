@@ -53,8 +53,8 @@ app.get('/app/:page', (req, res) => {
 });
 
 // Rutas adicionales
-app.get('/session-expired', (req, res) => {
-    const filePath = path.join(__dirname, 'public/html', 'session.html');
+app.get('/auth/forgot-password', (req, res) => {
+    const filePath = path.join(__dirname, 'public/auth/pages', 'forgot-password.html');
 
     if (fs.existsSync(filePath)) {
         res.sendFile(filePath);
