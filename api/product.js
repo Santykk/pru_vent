@@ -1,112 +1,75 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import postgres from 'postgres';
+import { createClient } from '@supabase/supabase-js';
 
 dotenv.config();
 
 const router = express.Router();
 router.use(express.json());
 
-const sql = postgres(process.env.DATABASE_URL, {
-  debug: (connection, query, params) => {
-    console.log('SQL Query:', query, 'Params:', params);
-  },
-});
+// Crear cliente Supabase
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
 
-// Obtener productos, con filtro opcional por user_id
-router.get('/', async (req, res) => {
-  const { user_id } = req.query;
-
+// Obtener todas las ventas
+router.get('/', async (_req, res) => {
   try {
-    let productos;
+    const { data: sales, error } = await supabase
+      .from('sales')
+      .select('*')
+      .order('sale_date', { ascending: false });
 
-    if (user_id) {
-      productos = await sql`
-        SELECT * FROM producto_prd
-        WHERE user_id = ${user_id}
-        ORDER BY created_at DESC
-      `;
-    } else {
-      productos = await sql`
-        SELECT * FROM producto_prd
-        ORDER BY created_at DESC
-      `;
-    }
+    if (error) throw error;
 
-    res.json({ success: true, productos });
+    res.json({ success: true, sales });
   } catch (error) {
-    console.error('Error al obtener productos:', error.message);
-    res.status(500).json({ success: false, message: 'Error al obtener productos.' });
+    console.error('Error al obtener ventas:', error.message);
+    res.status(500).json({ success: false, message: 'Error al obtener ventas.' });
   }
 });
 
-// Insertar un producto
+// Insertar una venta
 router.post('/', async (req, res) => {
-  const {
-    nombre_tprd,
-    categoria_tprd,
-    precio_nprd,
-    descripcion_tprd,
-    imagenprinc_tprd,
-    imagen1_tprd,
-    imagen2_tprd,
-    imagen3_tprd,
-    imagen4_tprd,
-    imagen5_tprd,
-    stock_nprd,
-    user_id
-  } = req.body;
+  const { sale_date, payment_method, total_price } = req.body;
 
-  if (!nombre_tprd || !precio_nprd || !stock_nprd || !user_id) {
-    return res.status(400).json({ success: false, message: 'Faltan campos obligatorios.' });
+  if (!sale_date || !payment_method || !total_price) {
+    return res.status(400).json({ success: false, message: 'Faltan datos para registrar la venta.' });
   }
 
   try {
-    const result = await sql`
-      INSERT INTO producto_prd (
-        nombre_tprd, categoria_tprd, precio_nprd, descripcion_tprd, imagenprinc_tprd,
-        imagen1_tprd, imagen2_tprd, imagen3_tprd, imagen4_tprd, imagen5_tprd,
-        stock_nprd, user_id
-      ) VALUES (
-        ${nombre_tprd}, ${categoria_tprd}, ${precio_nprd}, ${descripcion_tprd}, ${imagenprinc_tprd},
-        ${imagen1_tprd}, ${imagen2_tprd}, ${imagen3_tprd}, ${imagen4_tprd}, ${imagen5_tprd},
-        ${stock_nprd}, ${user_id}
-      )
-      RETURNING id_uprd
-    `;
+    const { data, error } = await supabase
+      .from('sales')
+      .insert([{ sale_date, payment_method, total_amount: total_price }])
+      .select('sale_code');
 
-    res.status(201).json({ success: true, id_uprd: result[0].id_uprd });
+    if (error) throw error;
+
+    res.status(201).json({ success: true, sale_code: data[0].sale_code });
   } catch (error) {
-    console.error('Error al insertar producto:', error.message);
-    res.status(500).json({ success: false, message: 'Error al insertar producto.' });
+    console.error('Error al registrar la venta:', error.message);
+    res.status(500).json({ success: false, message: 'Error al registrar la venta.' });
   }
 });
 
-// Eliminar un producto por id_uprd
-router.delete('/:id_uprd', async (req, res) => {
-  const { id_uprd } = req.params;
+// Eliminar una venta
+router.delete('/:sale_code', async (req, res) => {
+  const saleCode = req.params.sale_code;
 
   try {
-    const result = await sql`
-      DELETE FROM producto_prd WHERE id_uprd = ${id_uprd} RETURNING *
-    `;
+    const { data, error } = await supabase
+      .from('sales')
+      .delete()
+      .eq('sale_code', saleCode);
 
-    if (result.length === 0) {
-      return res.status(404).json({ success: false, message: 'Producto no encontrado.' });
+    if (error) throw error;
+    if (data.length === 0) {
+      return res.status(404).json({ success: false, message: 'Venta no encontrada.' });
     }
 
-    res.json({ success: true, message: 'Producto eliminado correctamente.' });
+    res.json({ success: true, message: 'Venta eliminada correctamente.' });
   } catch (error) {
-    console.error('Error al eliminar producto:', error.message);
-    res.status(500).json({ success: false, message: 'Error al eliminar producto.' });
+    console.error('Error al eliminar venta:', error.message);
+    res.status(500).json({ success: false, message: 'Error al eliminar venta.' });
   }
-});
-
-// Verificar conexión a la base de datos
-sql`SELECT 1`.then(() => {
-  console.log('Conexión a la base de datos establecida correctamente');
-}).catch((err) => {
-  console.error('Error al conectar a la base de datos:', err);
 });
 
 export default router;
