@@ -27,7 +27,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       const carta = document.createElement('div');
       carta.className = 'card';
       carta.innerHTML = `
-      <div class="card">
         <div class="card-img">
           <img src="${producto.imagenprinc_tprd || 'https://via.placeholder.com/150'}" alt="${producto.nombre_tprd}" class="img-card">
         </div>
@@ -45,7 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             </svg>
           </div>
         </div>
-        </div>
+
       `;
       contenedor.appendChild(carta);
     });

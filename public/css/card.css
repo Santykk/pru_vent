@@ -9,15 +9,15 @@
 }
 
 .card-img {
- background-color: #ffcaa6;
- height: 40%;
- width: 100%;
- border-radius: .5rem;
- transition: .3s ease;
+    height: 107px;
+    border-radius: .5rem;
+    transition: .3s ease;
+    margin: 0 auto;
+    display: block;
 }
 
 .card-info {
- padding-top: 10%;
+ padding-top: 0%;
 }
 
 svg {
