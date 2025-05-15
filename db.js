@@ -64,7 +64,7 @@ app.get('/session-expired', (req, res) => {
 });
 
 app.get('/auth', (req, res) => {
-    const filePath = path.join(__dirname, 'public', 'index.html');
+    const filePath = path.join(__dirname, 'public', 'login.html');
 
     if (fs.existsSync(filePath)) {
         res.sendFile(filePath);
@@ -73,19 +73,6 @@ app.get('/auth', (req, res) => {
     }
 });
 
-// Ruta para registrar nuevos usuarios (signup)
-app.get('/auth/signup', (req, res) => {
-    const role = req.query.role; // Obtiene el valor del query string "?role=user"
-    const filePath = path.join(__dirname, 'public/html', 'validate.html');
-
-    if (fs.existsSync(filePath)) {
-        res.sendFile(filePath);
-    } else {
-        res.status(404).send('Página no encontrada');
-    }
-
-    console.log(`Signup con rol: ${role}`);
-});
 
 // **Redirigir raíz (/) a home.html**
 app.get('/auth', (req, res) => {
