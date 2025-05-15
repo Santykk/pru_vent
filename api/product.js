@@ -1,101 +1,112 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import { createClient } from '@supabase/supabase-js';
+import postgres from 'postgres';
 
 dotenv.config();
 
 const router = express.Router();
+router.use(express.json());
 
-// Supabase client
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+const sql = postgres(process.env.DATABASE_URL, {
+  debug: (connection, query, params) => {
+    console.log('SQL Query:', query, 'Params:', params);
+  },
+});
 
-/* 🔹 Obtener todos los productos */
+// Obtener productos, con filtro opcional por user_id
 router.get('/', async (req, res) => {
+  const { user_id } = req.query;
+
   try {
-    const { data, error } = await supabase.from('producto_prd').select('*');
+    let productos;
 
-    if (error) throw error;
-
-    res.status(200).json({ success: true, data });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
-  }
-});
-
-/* 🔹 Obtener producto por ID */
-router.get('/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { data, error } = await supabase
-      .from('producto_prd')
-      .select('*')
-      .eq('id_uprd', id)
-      .single();
-
-    if (error || !data) throw new Error('Producto no encontrado');
-
-    res.status(200).json({ success: true, data });
-  } catch (err) {
-    res.status(404).json({ success: false, message: err.message });
-  }
-});
-
-/* 🔹 Insertar producto */
-router.post('/', async (req, res) => {
-  try {
-    const producto = req.body;
-
-    if (!producto.user_id || !producto.nombre_tprd || !producto.precio_nprd) {
-      return res.status(400).json({ success: false, message: 'Campos obligatorios faltantes' });
+    if (user_id) {
+      productos = await sql`
+        SELECT * FROM producto_prd
+        WHERE user_id = ${user_id}
+        ORDER BY created_at DESC
+      `;
+    } else {
+      productos = await sql`
+        SELECT * FROM producto_prd
+        ORDER BY created_at DESC
+      `;
     }
 
-    const { data, error } = await supabase.from('producto_prd').insert([producto]);
-
-    if (error) throw error;
-
-    res.status(201).json({ success: true, data });
-  } catch (err) {
-    res.status(500).json({ success: false, message: err.message });
+    res.json({ success: true, productos });
+  } catch (error) {
+    console.error('Error al obtener productos:', error.message);
+    res.status(500).json({ success: false, message: 'Error al obtener productos.' });
   }
 });
 
-/* 🔹 Editar producto por ID */
-router.put('/:id', async (req, res) => {
+// Insertar un producto
+router.post('/', async (req, res) => {
+  const {
+    nombre_tprd,
+    categoria_tprd,
+    precio_nprd,
+    descripcion_tprd,
+    imagenprinc_tprd,
+    imagen1_tprd,
+    imagen2_tprd,
+    imagen3_tprd,
+    imagen4_tprd,
+    imagen5_tprd,
+    stock_nprd,
+    user_id
+  } = req.body;
+
+  if (!nombre_tprd || !precio_nprd || !stock_nprd || !user_id) {
+    return res.status(400).json({ success: false, message: 'Faltan campos obligatorios.' });
+  }
+
   try {
-    const { id } = req.params;
-    const producto = req.body;
+    const result = await sql`
+      INSERT INTO producto_prd (
+        nombre_tprd, categoria_tprd, precio_nprd, descripcion_tprd, imagenprinc_tprd,
+        imagen1_tprd, imagen2_tprd, imagen3_tprd, imagen4_tprd, imagen5_tprd,
+        stock_nprd, user_id
+      ) VALUES (
+        ${nombre_tprd}, ${categoria_tprd}, ${precio_nprd}, ${descripcion_tprd}, ${imagenprinc_tprd},
+        ${imagen1_tprd}, ${imagen2_tprd}, ${imagen3_tprd}, ${imagen4_tprd}, ${imagen5_tprd},
+        ${stock_nprd}, ${user_id}
+      )
+      RETURNING id_uprd
+    `;
 
-    const { data, error } = await supabase
-      .from('producto_prd')
-      .update(producto)
-      .eq('id_uprd', id)
-      .select();
-
-    if (error || !data.length) throw new Error('Error al actualizar o producto no encontrado');
-
-    res.status(200).json({ success: true, data: data[0] });
-  } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
+    res.status(201).json({ success: true, id_uprd: result[0].id_uprd });
+  } catch (error) {
+    console.error('Error al insertar producto:', error.message);
+    res.status(500).json({ success: false, message: 'Error al insertar producto.' });
   }
 });
 
-/* 🔹 Eliminar producto por ID */
-router.delete('/:id', async (req, res) => {
+// Eliminar un producto por id_uprd
+router.delete('/:id_uprd', async (req, res) => {
+  const { id_uprd } = req.params;
+
   try {
-    const { id } = req.params;
+    const result = await sql`
+      DELETE FROM producto_prd WHERE id_uprd = ${id_uprd} RETURNING *
+    `;
 
-    const { data, error } = await supabase
-      .from('producto_prd')
-      .delete()
-      .eq('id_uprd', id)
-      .select();
+    if (result.length === 0) {
+      return res.status(404).json({ success: false, message: 'Producto no encontrado.' });
+    }
 
-    if (error || !data.length) throw new Error('No se pudo eliminar el producto');
-
-    res.status(200).json({ success: true, message: 'Producto eliminado correctamente' });
-  } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
+    res.json({ success: true, message: 'Producto eliminado correctamente.' });
+  } catch (error) {
+    console.error('Error al eliminar producto:', error.message);
+    res.status(500).json({ success: false, message: 'Error al eliminar producto.' });
   }
+});
+
+// Verificar conexión a la base de datos
+sql`SELECT 1`.then(() => {
+  console.log('Conexión a la base de datos establecida correctamente');
+}).catch((err) => {
+  console.error('Error al conectar a la base de datos:', err);
 });
 
 export default router;
