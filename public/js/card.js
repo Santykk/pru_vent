@@ -27,8 +27,9 @@ document.addEventListener('DOMContentLoaded', async () => {
       const carta = document.createElement('div');
       carta.className = 'card';
       carta.innerHTML = `
+      <div class="card">
         <div class="card-img">
-          <img src="${producto.imagenprinc_tprd || 'https://via.placeholder.com/150'}" alt="${producto.nombre_tprd}" style="width: 100%; height: auto;">
+          <img src="${producto.imagenprinc_tprd || 'https://via.placeholder.com/150'}" alt="${producto.nombre_tprd}" class="img-card">
         </div>
         <div class="card-info">
           <p class="text-title">${producto.nombre_tprd}</p>
@@ -43,6 +44,7 @@ document.addEventListener('DOMContentLoaded', async () => {
               <path d="M13.972,12.386c-1.022,0-1.855,0.834-1.855,1.856s0.833,1.853,1.855,1.853s1.854-0.83,1.854-1.853S14.994,12.386,13.972,12.386z M13.972,15.116c-0.484,0-0.878-0.393-0.878-0.874c0-0.484,0.394-0.878,0.878-0.878c0.482,0,0.875,0.394,0.875,0.878C14.847,14.724,14.454,15.116,13.972,15.116z"></path>
             </svg>
           </div>
+        </div>
         </div>
       `;
       contenedor.appendChild(carta);
