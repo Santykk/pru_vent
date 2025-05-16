@@ -37,7 +37,6 @@
     .icons svg {
       width: 24px;
       height: 24px;
-      fill: rgb(0, 0, 0);
       cursor: pointer;
       transition: transform 0.2s;
     }
