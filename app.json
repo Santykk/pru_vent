@@ -1,0 +1,15 @@
+{
+  "expo": {
+    "name": "Shop",
+    "slug": "pru_vent",
+    "version": "1.0.0",
+    "newArchEnabled": false, 
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.santy.gingashop"
+    },
+    "android": {
+      "package": "com.santy.gingashop"
+    }
+  }
+}
